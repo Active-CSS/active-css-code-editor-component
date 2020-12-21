@@ -6,7 +6,7 @@ It consists of two files, an Active CSS config file and a CSS file for the edito
 
 The code editor can be drawn multiple times on a single page, and the component's HTML tag needs at least 340px in width. The code editor will work on any device size as long as it has at least 340px width allocated to it. The styling and functionality for the component is based on its own width - not the device's width.
 
-Proper instructions will follow on release of 2.4.0. Basically though you include the component HTML tag somewhere pre-rendered or dynamically with some attributes. The attributes point to the different ACSS, HTML and CSS files to edit, the location of the Active CSS core file to use for running the results, plus the location of the CSS file for the editor itself.
+Proper instructions will follow on release of 2.4.0. Basically though you include the component HTML tag somewhere pre-rendered or dynamically with some attributes. The attributes point to the different ACSS, HTML and CSS files to edit, the location of the Active CSS core file to use for running the results, plus the location of the CSS file for the editor itself. More attribute options will probably be added on later.
 
 Example use:
 
