@@ -2,7 +2,7 @@ An Active CSS code editor component for playing with Active CSS, HTML and CSS. I
 
 Requires at least Active CSS version 2.4.0, or the latest 2.4.0 branch if unreleased and a shadow DOM supporting browser.
 
-It consists of two files, an Active CSS config file and a CSS file for the editor itself. The component is totally self-isolated.
+It consists of two files, an Active CSS config file and a CSS file for the editor itself. The component code is totally self-isolated. It utilises the window event and the body:init event of the ACSS config, but these things shouldn't intrude on its outer environment.
 
 The code editor can be drawn multiple times on a single page, and the component's HTML tag needs at least 340px in width. The code editor will work on any device size as long as it has at least 340px width allocated to it. The styling and functionality for the component is based on its own width - not the device's width.
 
