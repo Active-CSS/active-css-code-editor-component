@@ -33,7 +33,6 @@
 
 		// Run tasks.
 		grunt.registerTask('default', [ 'cssmin', 'copy' ]);
-//		grunt.registerTask('default', [ 'cssmin' ]);
 	};
 
 }());
