@@ -20,4 +20,4 @@ Example use:
 </acss-editor>
 ```
 
-It doesn't have any syntax highlighting yet. Ideally syntax highlighting will get incorporated into the acss as custom commands - I'm not interesting in having a separate JS file just for syntax highlighting as it defeats the whole point of a simple single component. Syntax highlighting will happen at some point once I've worked out a sane strategy for it. It will probably end up being a set of custom commands which can just be copied into the component as additional ACSS config and so have an additional use as re-usable ACSS commands.
+The code editor does not have any syntax highlighting yet. Ideally, syntax highlighting will get incorporated as custom ACSS commands. That would make sense - it's the sort of thing that would be really useful as a CSS command - to apply syntax highlighting of a file type to a contenteditable and just work dynamically. It is actually a styling issue. So it will probably end up being a set of custom commands which can just be copied into the component as additional ACSS config and so have an additional use as re-usable ACSS commands.
