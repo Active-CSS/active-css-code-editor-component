@@ -1,0 +1,15 @@
+{
+	"name": "active-css-code-editor-component",
+	"version": "1.0.0",
+	"description": "An embeddable Active CSS code editor component for playing with Active CSS, HTML and CSS.",
+	"repository": "https://github.com/Active-CSS/active-css-code-editor-component",
+	"author": "River Zend Dynamics Ltd.",
+	"license": "MIT",
+	"private": false,
+	"devDependencies": {
+		"grunt": "^1.3.0",
+		"grunt-contrib-copy": "^1.0.0",
+		"grunt-contrib-cssmin": "^3.0.0"
+	},
+	"dependencies": {}
+}

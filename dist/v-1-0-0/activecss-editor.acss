@@ -1,0 +1,521 @@
+/*********************************************/
+/******** ACSS Editor v1.0 Active CSS ********/
+/*********************************************/
+
+/*******************************/
+/******** Global events ********/
+/*******************************/
+body:preInit {
+	create-element: acss-editor acssEditor,
+		acss-editor-mobile-menu acssEditorMobileMenu,
+		acss-editor-code-acss acssEditorCodeACSS,
+		acss-editor-code-html acssEditorCodeHTML,
+		acss-editor-code-css acssEditorCodeCSS,
+		acss-editor-code-result
+	;
+}
+
+body:init {
+	add-class: .acss-editor-active;
+}
+
+window:if-max-width(acss-editor 800px):resize {
+    acss-editor -> shadow -> #editorWrap {
+        add-class: .small;
+    }
+}
+
+window:if-min-width(acss-editor 801px):resize {
+    acss-editor -> shadow -> #editorWrap {
+        remove-class: .small;
+    }
+}
+
+window:if-max-width(acss-editor 614px):resize {
+    acss-editor -> shadow -> #editorWrap {
+        add-class: .smaller, .small;
+    }
+}
+
+window:if-min-width(acss-editor 615px):resize {
+    acss-editor -> shadow -> #editorWrap {
+        remove-class: .smaller;
+    }
+}
+
+window:if-max-width(acss-editor 404px):resize {
+    acss-editor -> shadow -> #editorWrap {
+        add-class: .smallest, .smaller, .small;
+    }
+}
+
+window:if-min-width(acss-editor 405px):resize {
+    acss-editor -> shadow -> #editorWrap {
+        remove-class: .smallest;
+    }
+}
+
+/********************************/
+/******** Main component ********/
+/********************************/
+@component acssEditor shadow strictlyPrivateVars privateEvents {
+	&:beforeComponentOpen {
+		var: loadCounter 0,
+			$acssResults "",
+			$htmlResults "",
+			$cssResults "",
+			$originalResults [],
+			$originalResults['acss'] '',
+			$originalResults['html'] '',
+			$originalResults['css'] '',
+			acssFile "{@host:acss}",
+			htmlFile "{@host:html}",
+			cssFile "{@host:css}",
+			coreLocation "{@host:core}",
+			$baseResultCSS ('{@host:base-result-css}' != '') ? '<link rel="stylesheet" href="{@host:base-result-css}">' : '',
+			tabMode "Coding",
+			containerHeight,
+			topWrapHeight,
+			bottomWrapHeight,
+			resizerTop,
+			original_mouse_y,
+			minimum_sizeY 100,
+			winH window.innerHeight
+		;
+	}
+	*:click {
+		prevent-default: true;
+	}
+	&:componentOpen {
+		window {
+			trigger: resize;
+		}
+	}
+	&:if-max-width(#editorWrap 800px):componentOpen {
+		#editorWrap {
+			add-class: .small;
+		}
+	}
+	&:if-max-width(#editorWrap 614px):componentOpen {
+		#editorWrap {
+			add-class: .smaller;
+		}
+	}
+	&:if-max-width(#editorWrap 404px):componentOpen {
+		#editorWrap {
+			add-class: .smallest;
+		}
+	}
+	#runAgain:click {
+		var: $acssResults {#acssArea:NOVARS:UNESCAPED},
+			$htmlResults {#htmlArea:UNESCAPED},
+			$cssResults {#cssArea:UNESCAPED};
+		~result {
+			trigger: render;
+		}
+	}
+	#editorWrap.small #runAgain:click {
+		~wipeSelected {
+			trigger: doIt;
+		}
+		#editorWrap {
+			add-class: .resultSelected;
+		}
+	}
+	#reset:click {
+		var: $acssResults {$originalResults['acss']},
+			$htmlResults {$originalResults['html']},
+			$cssResults {$originalResults['css']};
+		#acssArea {
+			render-replace: "<textarea id=\"acssArea\" class=\"typingArea\" spellcheck=false>{$acssResults}</textarea>";
+		}
+		#htmlArea {
+			render-replace: "<textarea id=\"htmlArea\" class=\"typingArea\" spellcheck=false>{$htmlResults}</textarea>";
+		}
+		#cssArea {
+			render-replace: "<textarea id=\"cssArea\" class=\"typingArea\" spellcheck=false>{$cssResults}</textarea>";
+		}
+		~result {
+			trigger: render;
+		}
+	}
+	#screenSizer:not(.active):click {
+		host {
+			fullscreen-on: true;
+			padding: 0;
+		}
+		#editorWrap {
+			height: 100%;
+		}
+		render: "Exit fullscreen";
+		add-class: .active;
+	}
+	#screenSizer.active:click {
+		host {
+			padding: ;
+		}
+		#editorWrap {
+			height: 600px;
+		}
+		fullscreen-exit: true;
+		render: "Go fullscreen";
+		remove-class: .active;
+	}
+	#tabMode:if-var(tabMode "Coding"):click, #tabMode:if-var(tabMode "Coding"):keydownCtrlSpace {
+		var: tabMode "Navigation";
+	}
+	#tabMode:if-var(tabMode "Navigation"):click, #tabMode:if-var(tabMode "Coding"):keydownCtrlSpace {
+		var: tabMode "Coding";
+	}
+	#editorWrap:keydownCtrlSpace {
+		/* Stop any existing browser shortcut behaviour for this key combination. */
+		prevent-default: true;
+		#tabMode {
+			trigger: click;
+		}
+	}
+	#editorWrap:not(.small) .typingArea:input, #editorWrap:not(.small) .typingArea:if-var(tabMode "Coding"):keyupTab {
+		cancel-timer: shumbodyShtopMe;
+		#runAgain {
+			trigger: click after 500ms label shumbodyShtopMe;
+		}
+	}
+	.typingArea:if-var(tabMode "Coding"):keydownTab {
+		prevent-default: true;
+		acss-editor-insert-coding-tab: true;
+	}
+	#horizontalBar:mousedown {
+		#bottomCover {	
+			display: block;
+		}
+		prevent-default: true;
+		stop-propagation: true;
+		var: mouseIsDown true;
+		acss-editor-set-panel-vars: true;
+	}
+	#editorWrap:if-var-true(mouseIsDown):mousemove {
+		acss-editor-adjust-panels: true;
+	}
+	#editorWrap:mouseleave, *:mouseup {
+		#bottomCover {
+			display: none;
+		}
+		var: mouseIsDown false;
+	}
+	~result:render {
+		var: loadCounter 0;
+		acss-editor-code-result {
+			render: "<iframe>{|acssEditorIframeContent}</iframe>";
+		}
+	}
+	~wipeSelected:doIt {
+		#editorWrap {
+			remove-class: .acssSelected, .htmlSelected, .cssSelected, .resultSelected;
+		}
+	}
+	html {
+		<link rel="stylesheet" href="{@host:editor-css}">
+		<div id="editorWrap" class="acssSelected">
+			<acss-editor-mobile-menu></acss-editor-mobile-menu>
+			<div id="typingAreaOuterWrap">
+				<div class="typingAreaWrap">
+					<acss-editor-code-acss></acss-editor-code-acss>
+					<acss-editor-code-html></acss-editor-code-html>
+					<acss-editor-code-css></acss-editor-code-css>
+				</div>
+			</div>
+			<div id="horizontalBar"></div>
+			<div id="bottomCover"></div>
+			<div id="resultOuterWrap">
+				<div class="resultWrap">
+					<acss-editor-code-result>
+					</acss-editor-code-result>
+				</div>
+				<button id="runAgain">Re-run</button>
+				<button id="tabMode">Tab mode: {{tabMode}}</button>
+				<button id="reset">Reset</button>
+				<button id="screenSizer">Go fullscreen</button>
+			</div>
+		</div>
+	}
+}
+
+/********************************/
+/******** Sub-components ********/
+/********************************/
+@component acssEditorMobileMenu {
+	.smallSwitcher button[data-ref]:click {
+		~wipeSelected {
+			trigger: doIt;
+		}
+		#editorWrap {
+			add-class: .{@data-ref}Selected;
+		}
+	}
+	html {
+		<div class="smallSwitcher">
+			<button data-ref="acss">Active CSS</button>
+			<button data-ref="html">HTML</button>
+			<button data-ref="css">CSS</button>
+			<button data-ref="result">Result</button>
+		</div>
+	}
+}
+
+
+@component acssEditorCodeACSS privateVars {
+	&:if-empty({acssFile}):beforeComponentOpen {
+		var: loadCounter++;
+	}
+	&:not-if-empty({acssFile}):componentOpen {
+		ajax: "{acssFile}" get html cache;
+	}
+	&:afterAjax {
+		#acssArea {
+			render: "{$HTML_ESCAPED}";
+		}
+		var: $acssResults {$HTML_NOVARS},
+			$originalResults['acss'] {$HTML_NOVARS},
+			loadCounter++;
+	}
+	&:if-var(loadCounter 3):afterVar {
+		~result {
+			trigger: render;
+		}
+	}
+	#editorWrap:not(.small) #acssArea:focus {
+		acss-editor-code-acss > div {
+			width: calc(50% - 12px);
+		}
+		acss-editor-code-html > div {
+			left: 50%;
+			width: calc(25% - 12px);
+		}
+		acss-editor-code-css > div {
+			width: calc(25% - 12px);
+		}
+	}
+	#acssArea:click {
+		~wipeSelected {
+			trigger: doIt;
+		}
+		#editorWrap {
+			add-class: .acssSelected;
+		}
+	}
+	html {
+		<div class="textAreaWrap">
+			<div class="areaHeading">Active CSS</div>
+			<textarea id="acssArea" class="typingArea" spellcheck=false></textarea>
+		</div>
+	}
+}
+
+
+@component acssEditorCodeHTML privateVars {
+	&:if-empty({htmlFile}):beforeComponentOpen {
+		var: loadCounter++;
+	}
+	&:not-if-empty({htmlFile}):componentOpen {
+		ajax: "{htmlFile}" get html cache;
+	}
+	&:afterAjax {
+		#htmlArea {
+			render: "{$HTML_ESCAPED}";
+		}
+		var: $htmlResults {$HTML},
+			$originalResults['html'] {$HTML},
+			loadCounter++;
+	}
+	&:if-var(loadCounter 3):afterVar {
+		~result {
+			trigger: render;
+		}
+	}
+	#editorWrap:not(.small) #htmlArea:focus {
+		acss-editor-code-acss > div {
+			width: calc(25% - 12px);
+		}
+		acss-editor-code-html > div {
+			left: 25%;
+			width: calc(50% - 12px);
+		}
+		acss-editor-code-css > div {
+			width: calc(25% - 12px);
+		}
+	}
+	#htmlArea:click {
+		~wipeSelected {
+			trigger: doIt;
+		}
+		#editorWrap {
+			add-class: .htmlSelected;
+		}
+	}
+	html {
+		<div class="textAreaWrap">
+			<div class="areaHeading">HTML</div>
+			<textarea id="htmlArea" class="typingArea" spellcheck=false></textarea>
+		</div>
+	}
+}
+
+
+@component acssEditorCodeCSS privateVars {
+	&:if-empty({cssFile}):beforeComponentOpen {
+		var: loadCounter++;
+	}
+	&:not-if-empty({cssFile}):componentOpen {
+		ajax: "{cssFile}" get html cache;
+	}
+	&:afterAjax {
+		#cssArea {
+			render: "{$HTML_ESCAPED}";
+		}
+		var: $cssResults {$HTML},
+			$originalResults['css'] {$HTML},
+			loadCounter++;
+	}
+	&:if-var(loadCounter 3):afterVar {
+		~result {
+			trigger: render;
+		}
+	}
+	#editorWrap:not(.small) #cssArea:focus {
+		acss-editor-code-acss > div {
+			width: calc(25% - 12px);
+		}
+		acss-editor-code-html > div {
+			left: 25%;
+			width: calc(25% - 12px);
+		}
+		acss-editor-code-css > div {
+			width: calc(50% - 12px);
+		}
+	}
+	#cssArea:click {
+		~wipeSelected {
+			trigger: doIt;
+		}
+		#editorWrap {
+			add-class: .cssSelected;
+		}
+	}
+	html {
+		<div class="textAreaWrap">
+			<div class="areaHeading">CSS</div>
+			<textarea id="cssArea" class="typingArea" spellcheck=false></textarea>
+		</div>
+	}
+}
+
+
+@component acssEditorIframeContent {
+	html {
+		<html>
+			<head>
+				<script src="{coreLocation}"></script>
+				{$baseResultCSS}
+			</head>
+			<body onclick="void(0);">
+				{$htmlResults}
+				<style>
+				body { padding: 10px; }
+				{$cssResults}
+				</style>
+				<style type="text/acss">
+				{$acssResults}
+				</style>
+			</body>
+		</html>
+	}
+}
+
+
+/*******************/
+/* Custom commands */
+/*******************/
+@command acss-editor-insert-coding-tab {=
+	/*
+		In between {= and =} (like here) there is always native JavaScript.
+		Note: The variable e used down below is always available in a custom command. See @command in docs
+	*/
+	let el = targetSelector;
+	var oS = el.scrollTop;
+	if (el.setSelectionRange) {
+		var sS = el.selectionStart;	
+		var sE = el.selectionEnd;
+		el.value = el.value.substring(0, sS) + "\t" + el.value.substr(sE);
+		el.setSelectionRange(sS + 1, sS + 1);
+		el.focus();
+	} else if (el.createTextRange) {
+		document.selection.createRange().text = "\t";
+		e.returnValue = false;
+	}
+	el.scrollTop = oS;
+	if (e.preventDefault) {
+		e.preventDefault();
+	}
+=}
+
+
+@command acss-editor-set-panel-vars {=
+	/* Pull in component ACSS variables to be used in this command. The scope used is the exact same as where the command is used. */
+	vars containerHeight, topWrapHeight, bottomWrapHeight, resizerTop, original_mouse_y;
+
+	/***
+		The rest is regular JavaScript.
+		I probably should have just used an ACSS function instead of custom commands as the vars are quite unique to this component, but I quite like
+		making up my own commands as it feels a lot cooler :)
+		Note that I named my commands unique to this component. This is so that they will never clash with future ACSS commands.
+		These commands could be made into generic re-usable commands but I want to do this quickly and doing a generic command would require a
+		lot more thought and prototyping.
+		Note: The variables doc and targetSelector used down below are always available in a custom command. See @command in docs.
+	*/
+	const container = doc.getElementById('editorWrap');
+	const topWrap = doc.getElementById('typingAreaOuterWrap');
+	const bottomWrap = doc.getElementById('resultOuterWrap');
+
+	containerHeight = container.clientHeight;
+	topWrapHeight = topWrap.clientHeight;
+	bottomWrapHeight = bottomWrap.clientHeight;
+
+	resizerTop = parseInt(targetSelector.offsetTop, 10);
+	original_mouse_y = e.pageY;
+=}
+
+
+@command acss-editor-adjust-panels {=
+	/* Pull in component ACSS variables to be used in this command. The scope used is the exact same as where the command is used. */
+	vars containerHeight, topWrapHeight, bottomWrapHeight, resizerTop, original_mouse_y, minimum_sizeY, winH;
+
+	/***
+		The rest is regular JavaScript.
+		Note: The variables e and doc used down below are always available in a custom command. See @command in docs.
+	*/
+	const topHeight = topWrapHeight + (e.pageY - original_mouse_y);
+	const bottomHeight = bottomWrapHeight + -(e.pageY - original_mouse_y);
+
+	if (topHeight > 80 && bottomHeight > 80 && winH > 300) {
+		const topWrap = doc.getElementById('typingAreaOuterWrap');
+		const bottomWrap = doc.getElementById('resultOuterWrap');
+		const resizer = doc.getElementById('horizontalBar');
+
+		// When the mouse moves over the results iframe, the document focus is lost and the resizing stops - we need it to continue for quick
+		// mouse movements so there's a transparent div over the iframe for this that gets displayed on mousedown to keep mouse events in the
+		// document that gets removed on mouseup or if the mouse goes out of the component.
+		const bottomCover = doc.getElementById('bottomCover');
+
+		const newTopHeightPerc = topHeight / containerHeight * 100;
+		const newBottomHeightPerc = bottomHeight / containerHeight * 100;
+		const newBottomTopPerc = newTopHeightPerc;
+
+		topWrap.style.height = 'calc(' + newTopHeightPerc + '% - 10px)';
+		bottomWrap.style.height = 'calc(' + newBottomHeightPerc + '% + 10px)';
+		bottomWrap.style.top = 'calc(' + newBottomTopPerc + '% + 10px)';
+		bottomCover.style.height = 'calc(' + newBottomHeightPerc + '% + 10px)';
+		bottomCover.style.top = 'calc(' + newBottomTopPerc + '% + 10px)';
+		resizer.style.top = 'calc(' + newBottomTopPerc + '% - 14px)';
+	}
+=}
+
