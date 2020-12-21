@@ -19,3 +19,5 @@ Example use:
     editor-css="/css/activecss-editor.css">
 </acss-editor>
 ```
+
+It doesn't have any syntax highlighting yet. Ideally syntax highlighting will get incorporated into the acss as custom commands - I'm not interesting in having a separate JS file just for syntax highlighting as it defeats the whole point of a simple single component. Syntax highlighting will happen at some point once I've worked out a sane strategy for it. It will probably end up being a set of custom commands which can just be copied into the component as additional ACSS config and so have an additional use as re-usable ACSS commands.
