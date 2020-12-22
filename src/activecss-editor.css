@@ -47,8 +47,8 @@ acss-editor-code-css > div {
 .typingArea {
 	font-family: consolas,"Liberation Mono",courier,monospace;
 	font-size: 14px;
-	width: calc(100% - 14px);
-	height: calc(100% - 32px);
+	width: calc(100% - 19px);
+	height: calc(100% - 41px);
 	margin: 4px;
 	padding: 5px;
 	resize: none;
@@ -202,6 +202,7 @@ acss-editor-mobile-menu {
 	top: 60px;
 	bottom: 0;
 	height: calc(100% - 70px);
+	width: calc(100% - 7px);
 }
 
 #editorWrap.small #resultOuterWrap {

@@ -31,13 +31,13 @@ window:if-min-width(acss-editor 801px):resize {
     }
 }
 
-window:if-max-width(acss-editor 614px):resize {
+window:if-max-width(acss-editor 654px):resize {
     acss-editor -> shadow -> #editorWrap {
         add-class: .smaller, .small;
     }
 }
 
-window:if-min-width(acss-editor 615px):resize {
+window:if-min-width(acss-editor 655px):resize {
     acss-editor -> shadow -> #editorWrap {
         remove-class: .smaller;
     }
@@ -232,7 +232,7 @@ window:if-min-width(acss-editor 405px):resize {
 					</acss-editor-code-result>
 				</div>
 				<button id="runAgain">Re-run</button>
-				<button id="tabMode">Tab mode: {{tabMode}}</button>
+				<button id="tabMode">Tab mode: {{tabMode}} <span style="font-size: 9px;">ctrl-space</span></button>
 				<button id="reset">Reset</button>
 				<button id="screenSizer">Go fullscreen</button>
 			</div>
