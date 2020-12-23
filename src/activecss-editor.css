@@ -138,6 +138,12 @@ acss-editor-code-result iframe {
 	overflow: hidden;
 }
 
+@media (min-width: 1024px) {
+	#editorWrap {
+		height: 600px;
+	}
+}
+
 #typingAreaOuterWrap {
 	position: absolute;
 	width: 100%;
