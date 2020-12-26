@@ -267,6 +267,11 @@ window:if-min-width(acss-editor 405px):resize {
 	&:if-empty({acssFile}):beforeComponentOpen {
 		var: loadCounter++;
 	}
+	&:componentOpen {
+		#acssArea {
+			trigger: focus;
+		}
+	}
 	&:not-if-empty({acssFile}):componentOpen {
 		ajax: "{acssFile}" get html cache;
 	}
@@ -295,7 +300,7 @@ window:if-min-width(acss-editor 405px):resize {
 			width: calc(25% - 12px);
 		}
 	}
-	#acssArea:click {
+	#acssArea:focus {
 		~wipeSelected {
 			trigger: doIt;
 		}
@@ -344,7 +349,7 @@ window:if-min-width(acss-editor 405px):resize {
 			width: calc(25% - 12px);
 		}
 	}
-	#htmlArea:click {
+	#htmlArea:focus {
 		~wipeSelected {
 			trigger: doIt;
 		}
@@ -393,7 +398,7 @@ window:if-min-width(acss-editor 405px):resize {
 			width: calc(50% - 12px);
 		}
 	}
-	#cssArea:click {
+	#cssArea:focus {
 		~wipeSelected {
 			trigger: doIt;
 		}
@@ -417,10 +422,9 @@ window:if-min-width(acss-editor 405px):resize {
 				<script src="{coreLocation}"></script>
 				{$baseResultCSS}
 			</head>
-			<body onclick="void(0);">
+			<body onclick="void(0);" style="padding: 10px;">
 				{$htmlResults}
 				<style>
-				body { padding: 10px; }
 				{$cssResults}
 				</style>
 				<style type="text/acss">
@@ -465,8 +469,7 @@ window:if-min-width(acss-editor 405px):resize {
 
 	/***
 		The rest is regular JavaScript.
-		I probably should have just used an ACSS function instead of custom commands as the vars are quite unique to this component, but I quite like
-		making up my own commands as it feels a lot cooler :)
+		An alternative to this type of JS is to use an ACSS function instead of custom commands.
 		Note that I named my commands unique to this component. This is so that they will never clash with future ACSS commands.
 		These commands could be made into generic re-usable commands but I want to do this quickly and doing a generic command would require a
 		lot more thought and prototyping.
