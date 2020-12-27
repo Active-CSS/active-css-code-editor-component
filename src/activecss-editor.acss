@@ -424,12 +424,12 @@ window:if-min-width(acss-editor 405px):resize {
 			</head>
 			<body onclick="void(0);" style="padding: 10px;">
 				{$htmlResults}
-				<style>
+				<acss-style>
 				{$cssResults}
-				</style>
-				<style type="text/acss">
+				</acss-style>
+				<acss-style type="text/acss">
 				{$acssResults}
-				</style>
+				</acss-style>
 			</body>
 		</html>
 	}
@@ -504,9 +504,9 @@ window:if-min-width(acss-editor 405px):resize {
 		const bottomWrap = doc.getElementById('resultOuterWrap');
 		const resizer = doc.getElementById('horizontalBar');
 
-		// When the mouse moves over the results iframe, the document focus is lost and the resizing stops - we need it to continue for quick
-		// mouse movements so there's a transparent div over the iframe for this that gets displayed on mousedown to keep mouse events in the
-		// document that gets removed on mouseup or if the mouse goes out of the component.
+		/* When the mouse moves over the results iframe, the document focus is lost and the resizing stops - we need it to continue for quick
+		 mouse movements so there's a transparent div over the iframe for this that gets displayed on mousedown to keep mouse events in the
+		 document that gets removed on mouseup or if the mouse goes out of the component. */
 		const bottomCover = doc.getElementById('bottomCover');
 
 		const newTopHeightPerc = topHeight / containerHeight * 100;
@@ -521,4 +521,3 @@ window:if-min-width(acss-editor 405px):resize {
 		resizer.style.top = 'calc(' + newBottomTopPerc + '% - 14px)';
 	}
 =}
-
