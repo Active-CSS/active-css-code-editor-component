@@ -16,7 +16,9 @@ How to use it:
 
 1) Put an Active CSS core in a script tag on your page if there isn't one there already.
 2) Setup an Active CSS config file if you don't have one already set up (see installation on the docs site for instructions on how to do this) and paste in the activecss-editor.acss code. Alternatively you can just load the file as an additional config file by following the installation procedure on the docs site.
-4) In your HTML, write out the HTML for the component as below and fill out the attributes that point to the relevant files in your public folder.
+4) In your HTML, write out the HTML for the component as below and fill out the attributes that point to the relevant files in your public folder. The files must be publicly readable. The files themselves will not be written to - every edit and subsequent edit is done in memory.
+
+Note: The acss, html and css file referencing attributes can be left empty if they are not needed. But the core and editor-css attributes *must* be populated.
 
 
 ```
