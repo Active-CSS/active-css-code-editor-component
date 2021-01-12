@@ -10,7 +10,7 @@ The code editor can be drawn multiple times on a single page, and the component'
 
 Basically you include the component HTML tag somewhere pre-rendered or dynamically with some attributes. The attributes point to the different ACSS, HTML and CSS files to edit, the location of the Active CSS core file to use for running the results, plus the location of the CSS file for the editor itself. More attribute options will probably be added on later.
 
-The attributes that are filled in are needed to load the acss, html and css files that you want to edit, to specify where the Active CSS core version is to be used in the result iframe, and to load the CSS for the component itself (the editor-css attribute).
+The attributes that are filled in are needed to load the acss, html and css files that you want to edit in the code editor itself on startup, to specify where the Active CSS core version is to be used in the result iframe, and to load the CSS for the component itself (the editor-css attribute).
 
 How to use it:
 
