@@ -1,4 +1,4 @@
-An embeddable Active CSS code editor component for playing with Active CSS, HTML and CSS. It is used on the upcoming docs site for 2.4.0 so that all the examples can be played around with. It's like codepen, codesandbox, etc. but on a smaller scale as it doesn't allow any saving or sharing of code. It's just for playing around on and for inserting rude words into the live examples to see what happens.
+An embeddable Active CSS code editor component for playing with Active CSS, HTML and CSS. It is used on the docs site for Active CSS 2.4.0 so that all the examples can be played around with. It's like codepen, codesandbox, etc. but on a smaller scale as it doesn't allow any saving or sharing of code. It's just for playing around on and for inserting rude words into the live examples to see what happens.
 
 Requires at least Active CSS version 2.4.0, or the latest 2.4.0 branch if unreleased and a shadow DOM supporting browser.
 
