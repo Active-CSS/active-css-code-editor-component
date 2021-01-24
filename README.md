@@ -1,6 +1,6 @@
 An embeddable Active CSS code editor component for playing with Active CSS, HTML and CSS. It is used on the Active CSS docs site so that all the examples can be played around with. It's like codepen, codesandbox, etc. but on a smaller scale as it doesn't allow any saving or sharing of code. It's just for playing around on and for inserting rude words into the live examples to see what happens.
 
-Requires at least Active CSS version 2.4.0, or the latest 2.4.0 branch if unreleased and a shadow DOM supporting browser.
+Requires at least Active CSS version 2.4.3 and a shadow DOM supporting browser.
 
 The component consists of two files, an Active CSS config file and a CSS file for the editor itself. The component code is totally self-isolated. It utilises the window event and the body:init event of the ACSS config, but these things shouldn't intrude on its outer environment.
 
