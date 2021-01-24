@@ -27,7 +27,7 @@ Note: The acss, html and css file referencing attributes can be left empty if th
     acss="/examples/acss/active-css-hello-world.acss"
     html="/examples/html/active-css-hello-world.html"
     css="/examples/html/active-css-hello-world.css"
-    core="/activecss/activecss-dev-2-4-2.js"
+    core="/activecss/activecss-dev-2-4-3.js"
     editor-css="/css/activecss-editor.css">
 </acss-editor>
 ```
