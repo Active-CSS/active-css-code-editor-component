@@ -32,4 +32,29 @@ Note: The acss, html and css file referencing attributes can be left empty if th
 </acss-editor>
 ```
 
-The code editor does not have any syntax highlighting yet. Ideally, syntax highlighting will get incorporated as custom ACSS commands. That would make sense - it's the sort of thing that would be really useful as a CSS command - to apply syntax highlighting of a file type to a contenteditable and just work dynamically. It is actually a styling issue. So it will probably end up being a set of custom commands which can just be copied into the component as additional ACSS config and so have an additional use as re-usable ACSS commands.
+
+Alternative template-based method:
+
+There is an alternative method which can be used for embedded code snippets, instead of using external files. Ie. HTML, CSS and ACSS that are stored in template tags on the page, as opposed to being in external files. This is used for the Active CSS offline docs site, as file:// local locations don't like XHR requests, so the "files" are gotten from the insides of template tags instead.
+
+The new alternative syntax is this:
+
+```
+<acss-editor
+    acss-template-selector="#acss-active-css-wack-a-mole"
+    html-template-selector="#html-active-css-wack-a-mole"
+    css-template-selector="#css-active-css-wack-a-mole"
+    core="activecss/activecss-2-5-1.min.js"
+    editor-css="css/activecss-editor.css">
+</acss-editor>
+```
+
+Having general selectors as above allows for the most flexibility. Just ensure the selector matches up to the template you want to embed into the code editor.
+
+CSS inside a template must be surrounded by <style></style> tags.
+ACSS inside a template must be surrounded by <style type="text/acss"></style> tags.
+
+
+Syntax highlighting:
+
+The code editor does not have any syntax highlighting yet. Ideally, syntax highlighting will get incorporated as custom ACSS commands at some point.
