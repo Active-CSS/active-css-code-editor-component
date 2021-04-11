@@ -33,7 +33,7 @@ Note: The acss, html and css file referencing attributes can be left empty if th
 ```
 
 
-Alternative template-based method:
+Alternative template-based method (available from version 2.5.1 of the ACSS core):
 
 There is an alternative method which can be used for embedded code snippets, instead of using external files. Ie. HTML, CSS and ACSS that are stored in template tags on the page, as opposed to being in external files. This is used for the Active CSS offline docs site, as file:// local locations don't like XHR requests, so the "files" are gotten from the insides of template tags instead.
 
