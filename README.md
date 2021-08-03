@@ -1,6 +1,6 @@
 An embeddable Active CSS code editor component for playing with Active CSS, HTML and CSS. It is used on the Active CSS docs site so that all the examples can be played around with. It's like codepen, codesandbox, etc. but on a smaller scale as it doesn't allow any saving or sharing of code. It's just for playing around on and for inserting rude words into the live examples to see what happens.
 
-Requires at least Active CSS version 2.4.3 and a shadow DOM supporting browser.
+Requires at least Active CSS version 2.4.3 and a shadow DOM supporting browser. A distribution for each version of the Active CSS core is available in the dist folder.
 
 The component consists of two files, an Active CSS config file and a CSS file for the editor itself. The component code is totally self-isolated. It utilises the window event and the body:init event of the ACSS config, but these things shouldn't intrude on its outer environment.
 
@@ -27,7 +27,7 @@ Note: The acss, html and css file referencing attributes can be left empty if th
     acss="/examples/acss/active-css-hello-world.acss"
     html="/examples/html/active-css-hello-world.html"
     css="/examples/html/active-css-hello-world.css"
-    core="/activecss/activecss-dev-2-4-3.js"
+    core="/activecss/activecss-dev-2-7-0.js"
     editor-css="/css/activecss-editor.css">
 </acss-editor>
 ```
@@ -44,7 +44,7 @@ The new alternative syntax is this:
     acss-template-selector="#acss-active-css-wack-a-mole"
     html-template-selector="#html-active-css-wack-a-mole"
     css-template-selector="#css-active-css-wack-a-mole"
-    core="activecss/activecss-2-5-1.min.js"
+    core="activecss/activecss-2-7-0.min.js"
     editor-css="css/activecss-editor.css">
 </acss-editor>
 ```
