@@ -1,5 +1,5 @@
 /***********************************************/
-/******** ACSS Editor v2.7.0 Active CSS ********/
+/******** ACSS Editor v2.5.1 Active CSS ********/
 /***********************************************/
 
 /*******************************/
@@ -19,37 +19,36 @@ body:init {
 	add-class: .acss-editor-active;
 }
 
-window:resize {
+window:if-min-width(acss-editor 801px):resize {
     acss-editor {
-		@if min-width(acss-editor 801px) {
-	        set-attribute: size "";
-	    }
-	    @if min-width(acss-editor 655px) && max-width(acss-editor 800px) {
-	        set-attribute: size "small";
-		}
-		@if min-width(acss-editor 405px) && max-width(acss-editor 654px) {
-	        set-attribute: size "small smaller";
-		}
-		@if max-width(acss-editor 404px) {
-	        set-attribute: size "small smaller smallest";
-		}
-	}
+        set-attribute: size "";
+    }
 }
+
+window:if-min-width(acss-editor 655px):if-max-width(acss-editor 800px):resize {
+    acss-editor {
+        set-attribute: size "small";
+    }
+}
+
+window:if-min-width(acss-editor 405px):if-max-width(acss-editor 654px):resize {
+    acss-editor {
+        set-attribute: size "small smaller";
+    }
+}
+
+window:if-max-width(acss-editor 404px):resize {
+    acss-editor {
+        set-attribute: size "small smaller smallest";
+    }
+}
+
 
 /********************************/
 /******** Main component ********/
 /********************************/
 @component acssEditor shadow strictlyPrivate {
 	&:beforeComponentOpen {
-		@if min-width(self 655px) && max-width(self 800px) {
-	        set-attribute: size "small";
-		}
-		@if min-width(self 405px) && max-width(self 654px) {
-	        set-attribute: size "small smaller";
-		}
-		@if max-width(self 404px) {
-	        set-attribute: size "small smaller smallest";
-		}
 		var: loadCounter 0,
 			$acssResults "",
 			$htmlResults "",
@@ -84,6 +83,15 @@ window:resize {
 			trigger: resize;
 		}
 	}
+	&:if-min-width(self 655px):if-max-width(self 800px):beforeComponentOpen {
+        set-attribute: size "small";
+	}
+	&:if-min-width(self 405px):if-max-width(self 654px):beforeComponentOpen {
+        set-attribute: size "small smaller";
+	}
+	&:if-max-width(self 404px):beforeComponentOpen {
+        set-attribute: size "small smaller smallest";
+	}
 	#runAgain:click {
 		var: $acssResults {#acssArea:NOVARS:UNESCAPED},
 			$htmlResults {#htmlArea:UNESCAPED},
@@ -113,8 +121,8 @@ window:resize {
 		#cssArea {
 			render-replace: "<textarea id=\"cssArea\" class=\"typingArea\" spellcheck=false>{$cssResults}</textarea>";
 		}
-		#runAgain {
-			trigger: click;
+		~result {
+			trigger: render;
 		}
 	}
 	#screenSizer:not(.active):click {
@@ -139,12 +147,11 @@ window:resize {
 		render: "Go fullscreen";
 		remove-class: .active;
 	}
-	#tabMode:click, #tabMode:keydownCtrlSpace {
-		@if var(tabMode "Coding") {
-			var: tabMode "Navigation";
-		} @else {
-			var: tabMode "Coding";
-		}
+	#tabMode:if-var(tabMode "Coding"):click, #tabMode:if-var(tabMode "Coding"):keydownCtrlSpace {
+		var: tabMode "Navigation";
+	}
+	#tabMode:if-var(tabMode "Navigation"):click, #tabMode:if-var(tabMode "Coding"):keydownCtrlSpace {
+		var: tabMode "Coding";
 	}
 	#editorWrap:keydownCtrlSpace {
 		/* Stop any existing browser shortcut behaviour for this key combination. */
@@ -169,12 +176,8 @@ window:resize {
 		}
 		prevent-default: true;
 		stop-propagation: true;
-		var: mouseIsDown true,
-			containerHeight o.doc.getElementById('editorWrap').clientHeight,
-			topWrapHeight o.doc.getElementById('typingAreaOuterWrap').clientHeight,
-			bottomWrapHeight o.doc.getElementById('resultOuterWrap').clientHeight,
-			resizerTop parseInt(o.secSelObj.offsetTop, 10),
-			original_mouse_y o.e.pageY;
+		var: mouseIsDown true;
+		acss-editor-set-panel-vars: true;
 	}
 	#editorWrap:if-var-true(mouseIsDown):mousemove {
 		acss-editor-adjust-panels: true;
@@ -247,50 +250,67 @@ window:resize {
 }
 
 @command acss-editor-get-template-acss {=
-	let templateHost = compDoc.host.getRootNode();
+	let templateHost = o.compDoc.host.getRootNode();
 	let templateContents = templateHost.querySelector(o.actVal);
-	let content = templateContents.content.firstChild.innerHTML;
+	let content = templateContents.content.firstChild.firstChild.data;
+
+	vars $acssResults, $originalResults;
+	$acssResults = _escNoVars(content);
+	$originalResults['acss'] = _escNoVars(content);
 
 	compDoc.getElementById('acssArea').innerHTML = content;
 =}
 
 @command acss-editor-get-template-html {=
-	let templateHost = compDoc.host.getRootNode();
+	let templateHost = o.compDoc.host.getRootNode();
 	let templateContents = templateHost.querySelector(o.actVal);
-	let content = templateContents.innerHTML;
+
+	vars $htmlResults, $originalResults;
+	$htmlResults = templateContents.innerHTML;
+	$originalResults['html'] = templateContents.innerHTML;
 
 	compDoc.getElementById('htmlArea').innerHTML = templateContents.innerHTML;
 =}
 
 @command acss-editor-get-template-css {=
-	let templateHost = compDoc.host.getRootNode();
+	let templateHost = o.compDoc.host.getRootNode();
 	let templateContents = templateHost.querySelector(o.actVal);
-	let content = templateContents.content.firstChild.innerHTML;
+	let content = templateContents.content.firstChild.firstChild.data;
+
+	vars $cssResults, $originalResults;
+	$cssResults = content;
+	$originalResults['css'] = content;
 
 	compDoc.getElementById('cssArea').innerHTML = content;
 =}
 
 
 @component acssEditorCodeACSS privateVars {
+	&:not-if-empty({acssSelector}):componentOpen {
+		acss-editor-get-template-acss: {acssSelector};
+	}
+	&:if-empty({acssFile}):componentOpen {
+		var: loadCounter++;
+	}
 	&:componentOpen {
 		#acssArea {
 			trigger: focus;
 		}
-		@if !empty({acssSelector}) {
-			acss-editor-get-template-acss: {acssSelector};
-		} @else if !empty({acssFile}) {
-			ajax: "{acssFile}" get html cache await;
-			#acssArea {
-				render: "{$HTML_ESCAPED}";
-			}
-			var: $acssResults {$HTML_NOVARS},
-				$originalResults['acss'] {$HTML_NOVARS};
+	}
+	&:not-if-empty({acssFile}):componentOpen {
+		ajax: "{acssFile}" get html cache;
+	}
+	&:afterAjax {
+		#acssArea {
+			render: "{$HTML_ESCAPED}";
 		}
-		var: loadCounter++;
-		@if var(loadCounter 3) {
-			#runAgain {
-				trigger: click;
-			}
+		var: $acssResults {$HTML_NOVARS},
+			$originalResults['acss'] {$HTML_NOVARS},
+			loadCounter++;
+	}
+	&:if-var(loadCounter 3):afterVar {
+		~result {
+			trigger: render;
 		}
 	}
 	#editorWrap:not(.small) #acssArea:focus {
@@ -323,22 +343,26 @@ window:resize {
 
 
 @component acssEditorCodeHTML privateVars {
-	&:componentOpen {
-		@if !empty({htmlSelector}) {
-			acss-editor-get-template-html: {htmlSelector};
-		} @else if !empty({htmlFile}) {
-			ajax: "{htmlFile}" get html cache await;
-			#htmlArea {
-				render: "{$HTML_ESCAPED}";
-			}
-			var: $htmlResults {$HTML},
-				$originalResults['html'] {$HTML};
-		}
+	&:not-if-empty({htmlSelector}):componentOpen {
+		acss-editor-get-template-html: {htmlSelector};
+	}
+	&:if-empty({htmlFile}):componentOpen {
 		var: loadCounter++;
-		@if var(loadCounter 3) {
-			#runAgain {
-				trigger: click;
-			}
+	}
+	&:not-if-empty({htmlFile}):componentOpen {
+		ajax: "{htmlFile}" get html cache;
+	}
+	&:afterAjax {
+		#htmlArea {
+			render: "{$HTML_ESCAPED}";
+		}
+		var: $htmlResults {$HTML},
+			$originalResults['html'] {$HTML},
+			loadCounter++;
+	}
+	&:if-var(loadCounter 3):afterVar {
+		~result {
+			trigger: render;
 		}
 	}
 	#editorWrap:not(.small) #htmlArea:focus {
@@ -371,22 +395,26 @@ window:resize {
 
 
 @component acssEditorCodeCSS privateVars {
-	&:componentOpen {
-		@if !empty({cssSelector}) {
-			acss-editor-get-template-css: {cssSelector};
-		} @else if !empty({cssFile}) {
-			ajax: "{cssFile}" get html cache await;
-			#cssArea {
-				render: "{$HTML_ESCAPED}";
-			}
-			var: $cssResults {$HTML},
-				$originalResults['css'] {$HTML};
-		}
+	&:not-if-empty({cssSelector}):componentOpen {
+		acss-editor-get-template-css: {cssSelector};
+	}
+	&:if-empty({cssFile}):componentOpen {
 		var: loadCounter++;
-		@if var(loadCounter 3) {
-			#runAgain {
-				trigger: click;
-			}
+	}
+	&:not-if-empty({cssFile}):componentOpen {
+		ajax: "{cssFile}" get html cache;
+	}
+	&:afterAjax {
+		#cssArea {
+			render: "{$HTML_ESCAPED}";
+		}
+		var: $cssResults {$HTML},
+			$originalResults['css'] {$HTML},
+			loadCounter++;
+	}
+	&:if-var(loadCounter 3):afterVar {
+		~result {
+			trigger: render;
 		}
 	}
 	#editorWrap:not(.small) #cssArea:focus {
@@ -463,6 +491,31 @@ window:resize {
 	if (e.preventDefault) {
 		e.preventDefault();
 	}
+=}
+
+
+@command acss-editor-set-panel-vars {=
+	/* Pull in component ACSS variables to be used in this command. The scope used is the exact same as where the command is used. */
+	vars containerHeight, topWrapHeight, bottomWrapHeight, resizerTop, original_mouse_y;
+
+	/***
+		The rest is regular JavaScript.
+		An alternative to this type of JS is to use an ACSS function instead of custom commands.
+		Note that I named my commands unique to this component. This is so that they will never clash with future ACSS commands.
+		These commands could be made into generic re-usable commands but I want to do this quickly and doing a generic command would require a
+		lot more thought and prototyping.
+		Note: The variables doc and targetSelector used down below are always available in a custom command. See @command in docs.
+	*/
+	const container = doc.getElementById('editorWrap');
+	const topWrap = doc.getElementById('typingAreaOuterWrap');
+	const bottomWrap = doc.getElementById('resultOuterWrap');
+
+	containerHeight = container.clientHeight;
+	topWrapHeight = topWrap.clientHeight;
+	bottomWrapHeight = bottomWrap.clientHeight;
+
+	resizerTop = parseInt(targetSelector.offsetTop, 10);
+	original_mouse_y = e.pageY;
 =}
 
 
